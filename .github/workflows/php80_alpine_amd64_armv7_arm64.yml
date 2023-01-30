@@ -30,7 +30,7 @@ jobs:
               case "${git_branch}" in
                   "main" | "master" )
                       if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${PHP_VERSION}" = "${{ secrets.LATEST }}" ]; then
-                          image_latest="",${GITHUB_REPOSITORY}:latest"
+                          image_latest=",${GITHUB_REPOSITORY}:latest"
                       fi
                       branch_tag="${GITHUB_REPOSITORY}:php${PHP_VERSION},${GITHUB_REPOSITORY}:latest_php${PHP_VERSION}${image_latest}"
                   ;;
