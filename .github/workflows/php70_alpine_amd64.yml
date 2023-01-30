@@ -1,4 +1,4 @@
-### Application Level Image CI
+### PHP Build CI
 ### Dave Conroy <dave at tiredofit dot ca>
 
 name: Default Build
@@ -9,6 +9,8 @@ on:
 jobs:
   image_build:
     env:
+      PHP_VERSION: "7.0"
+      DISTRO: "alpine"
       build_file: Dockerfile
     runs-on: ubuntu-latest
     steps:
@@ -27,27 +29,19 @@ jobs:
 
               case "${git_branch}" in
                   "main" | "master" )
-                      branch_tag="${GITHUB_REPOSITORY}:latest"
+                      if [[ "${{ env.LATEST }}" = "TRUE" ]] || [ "${PHP_VERSION}" = "${{ secrets.LATEST }}" ];; then
+                        image_latest="",${GITHUB_REPOSITORY}:latest"
+                      fi
+                      branch_tag="${GITHUB_REPOSITORY}:php${PHP_VERSION},${GITHUB_REPOSITORY}:latest_php${PHP_VERSION}${image_latest}"
                   ;;
                   "develop" )
                       branch_tag="${GITHUB_REPOSITORY}:develop"
-                  ;;
-                  * )
-                      if [ -n "${{ secrets.LATEST }}" ] || [ -n "${{ env.LATEST }}" ]; then
-                          if [ "${branch_tag}" = "${{ secrets.LATEST }}" ]; || [ "${{ env.LATEST }}" = "TRUE" ] then
-                              branch_tag="${GITHUB_REPOSITORY}:${git_branch},${GITHUB_REPOSITORY}:${git_branch}-latest,${GITHUB_REPOSITORY}:latest"
-                          else
-                              branch_tag="${GITHUB_REPOSITORY}:${git_branch},${GITHUB_REPOSITORY}:${git_branch}-latest"
-                          fi
-                      else
-                          branch_tag="${GITHUB_REPOSITORY}:${git_branch},${GITHUB_REPOSITORY}:${git_branch}-latest"
-                      fi
                   ;;
               esac
           fi
 
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-              git_tag="${GITHUB_REPOSITORY}:$(echo ${GITHUB_REF} | sed 's|refs/tags/||g')"
+              git_tag="${GITHUB_REPOSITORY}:php$(PHP_VERSION}-$(echo ${GITHUB_REF} | sed 's|refs/tags/||g')"
           fi
 
           if [ -n "${branch_tag}" ] && [ -n "${git_tag}" ]; then
@@ -72,16 +66,16 @@ jobs:
               sed -i "/FROM .*/a LABEL org.opencontainers.image.source https://github.com/${GITHUB_REPOSITORY}"  ${{ env.build_file }}
 
               if [ -f "CHANGELOG.md" ] ; then
-                sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" ${{ env.build_file }}
-                mkdir -p install/assets/.changelogs ; cp CHANGELOG.md install/assets/.changelogs/${GITHUB_REPOSITORY/\//_}.md
+                  sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" ${{ env.build_file }}
+                  mkdir -p install/assets/.changelogs ; cp CHANGELOG.md install/assets/.changelogs/${GITHUB_REPOSITORY/\//_}.md
               fi
 
               if [[ $GITHUB_REF == refs/tags/* ]]; then
-                sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_tag=\"${GITHUB_REF#refs/tags/v}\"" ${{ env.build_file }}
+                  sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_tag=\"${GITHUB_REF#refs/tags/v}\"" ${{ env.build_file }}
               fi
 
               if [[ $GITHUB_REF == refs/heads/* ]]; then
-                sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_branch=\"${GITHUB_REF#refs/heads/}\"" ${{ env.build_file }}
+                  sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_branch=\"${GITHUB_REF#refs/heads/}\"" ${{ env.build_file }}
               fi
           fi
       - name: Set up Docker Buildx
@@ -115,7 +109,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: ./${{ env.build_file }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ steps.prep.outputs.container_images }}
 

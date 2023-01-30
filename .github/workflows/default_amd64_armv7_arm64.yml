@@ -33,8 +33,8 @@ jobs:
                       branch_tag="${GITHUB_REPOSITORY}:develop"
                   ;;
                   * )
-                      if [ -n "${{ secrets.LATEST }}" ] ; then
-                          if [ "${branch_tag}" = "${{ secrets.LATEST }}" ]; then
+                      if [ -n "${{ secrets.LATEST }}" ] || [ -n "${{ env.LATEST }}" ]; then
+                          if [ "${branch_tag}" = "${{ secrets.LATEST }}" ]; || [ "${{ env.LATEST }}" = "TRUE" ] then
                               branch_tag="${GITHUB_REPOSITORY}:${git_branch},${GITHUB_REPOSITORY}:${git_branch}-latest,${GITHUB_REPOSITORY}:latest"
                           else
                               branch_tag="${GITHUB_REPOSITORY}:${git_branch},${GITHUB_REPOSITORY}:${git_branch}-latest"
@@ -50,7 +50,7 @@ jobs:
               git_tag="${GITHUB_REPOSITORY}:$(echo ${GITHUB_REF} | sed 's|refs/tags/||g')"
           fi
 
-          if [ -n "${BRANCHTAG}" ] && [ -n "${GITTAG}" ]; then
+          if [ -n "${branch_tag}" ] && [ -n "${git_tag}" ]; then
               image_tags=${branch_tag},${git_tag}
           else
               image_tags="${branch_tag}${git_tag}"
