@@ -112,6 +112,9 @@ jobs:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           tags: ${{ steps.prep.outputs.container_images }}
+          build-args: |
+             DISTRO=${{ env.DISTRO }}
+             PHP_VERSION=${{ env.PHP_VERSION }}
 
       - name: Update Docker Hub Information
         if: github.event_name != 'pull_request'
