@@ -34,7 +34,7 @@ jobs:
                   ;;
                   * )
                       if [ -n "${{ secrets.LATEST }}" ] || [ -n "${{ env.LATEST }}" ]; then
-                          if [ "${branch_tag}" = "${{ secrets.LATEST }}" ]; || [ "${{ env.LATEST }}" = "TRUE" ] then
+                          if [ "${branch_tag}" = "${{ secrets.LATEST }}" ] || [ "${{ env.LATEST }}" = "TRUE" ] ; then
                               branch_tag="${GITHUB_REPOSITORY}:${git_branch},${GITHUB_REPOSITORY}:${git_branch}-latest,${GITHUB_REPOSITORY}:latest"
                           else
                               branch_tag="${GITHUB_REPOSITORY}:${git_branch},${GITHUB_REPOSITORY}:${git_branch}-latest"
