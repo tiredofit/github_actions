@@ -113,12 +113,12 @@ jobs:
           push: true
           tags: ${{ steps.prep.outputs.container_images }}
 
-      - name: Update Docker Hub Information
-        if: github.event_name != 'pull_request'
-        uses: peter-evans/dockerhub-description@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          repository: ${{ env.dockerhub_repo }}
-          short-description: ${{ github.event.repository.description }}
-          readme-filepath: ./README.md
+      #- name: Update Docker Hub Information
+      #  if: github.event_name != 'pull_request'
+      #  uses: peter-evans/dockerhub-description@v3
+      #  with:
+      #    username: ${{ secrets.DOCKER_USERNAME }}
+      #    password: ${{ secrets.DOCKER_PASSWORD }}
+      #    repository: ${{ env.dockerhub_repo }}
+      #    short-description: ${{ github.event.repository.description }}
+      #    readme-filepath: ./README.md
