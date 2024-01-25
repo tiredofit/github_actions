@@ -33,8 +33,8 @@ jobs:
                       branch_tag="${GITHUB_REPOSITORY}:develop"
                   ;;
                   * )
-                      if [ -n "${{ secrets.LATEST }}" ] || [ -n "${{ env.LATEST }}" ]; then
-                          if [ "${branch_tag}" = "${{ secrets.LATEST }}" ] || [ "${{ env.LATEST }}" = "TRUE" ] ; then
+                      if [ -n "${{ vars.LATEST }}" ]; then
+                          if [ "${{ vars.LATEST }}" = "${branch_tag}" ] || [ "${{ vars.LATEST }}" = "TRUE" ] ; then
                               branch_tag="${GITHUB_REPOSITORY}:${git_branch},${GITHUB_REPOSITORY}:${git_branch}-latest,${GITHUB_REPOSITORY}:latest"
                           else
                               branch_tag="${GITHUB_REPOSITORY}:${git_branch},${GITHUB_REPOSITORY}:${git_branch}-latest"
