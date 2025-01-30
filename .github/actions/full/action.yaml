@@ -116,17 +116,17 @@ runs:
             fi
         fi
 
-      - name: Build
-        if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@v6
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: ./${{ env.build_file }}
-          platforms: ${{ env.ARCH }}
-          push: false
-          tags: ${{ steps.prep.outputs.container_images }}
-          build-args: |
-             DISTRO=${{ env.DISTRO }}
-             DISTRO_VARIANT=${{ env.DISTRO_VARIANT }}
+    - name: Build
+      if: github.event_name != 'pull_request'
+      uses: docker/build-push-action@v6
+      with:
+        builder: ${{ steps.buildx.outputs.name }}
+        context: .
+        file: ./${{ env.build_file }}
+        platforms: ${{ env.ARCH }}
+        push: false
+        tags: ${{ steps.prep.outputs.container_images }}
+        build-args: |
+           DISTRO=${{ env.DISTRO }}
+           DISTRO_VARIANT=${{ env.DISTRO_VARIANT }}
 
