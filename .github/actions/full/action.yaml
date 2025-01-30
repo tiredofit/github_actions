@@ -122,7 +122,7 @@ runs:
       with:
         builder: ${{ steps.buildx.outputs.name }}
         context: .
-        file: ./${{ env.build_file }}
+        file: ./Dockerfile
         platforms: ${{ env.ARCH }}
         push: false
         tags: ${{ steps.prep.outputs.container_images }}
