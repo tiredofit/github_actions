@@ -58,10 +58,9 @@ runs:
       shell: bash
       run: |
         image_name=${GITHUB_REPOSITORY/docker-/}
-        set -x
-        if [ -f "${build_file}" ] ; then
+        if [ -f "${{ env.build_file }}" ] ; then
             sed -i \
-                    -e "/FROM .*/a LABEL tiredofit.${image_name}.git_repository=\"https://github.com/${GITHUB_REPOSITORY}\""
+                    -e "/FROM .*/a LABEL tiredofit.${image_name}.git_repository=\"https://github.com/${GITHUB_REPOSITORY}\"" \
                     -e "/FROM .*/a LABEL tiredofit.${image_name}.git_commit=\"${GITHUB_SHA}\"" \
                     -e "/FROM .*/a LABEL tiredofit.${image_name}.git_committed_by=\"${GITHUB_ACTOR}\"" \
                     -e "/FROM .*/a LABEL tiredofit.${image_name}.image_build_date=\"$(date +'%Y-%m-%d %H:%M:%S')\"" \
@@ -69,18 +68,18 @@ runs:
                     -e "/FROM .*/a LABEL tiredofit.${image_name}.distro=\"${DISTRO}')\"" \
                     -e "/FROM .*/a LABEL tiredofit.${image_name}.distro_variant=\"${DISTRO_VARIANT}\"" \
                     -e "/FROM .*/a LABEL org.opencontainers.image.source https://github.com/${GITHUB_REPOSITORY}" \
-                  ${build_file}
+                  ${{ env.build_file }}
 
             if [ -f "CHANGELOG.md" ] ; then
-                sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" ${build_file}
+                sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_changelog_version=\"$(head -n1 ./CHANGELOG.md | awk '{print $2}')\"" ${{ env.build_file }}
                 mkdir -p install/assets/.changelogs ; cp CHANGELOG.md install/assets/.changelogs/${GITHUB_REPOSITORY/\//_}.md
             fi
 
             if [[ $GITHUB_REF == refs/tags/* ]]; then
-                sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_tag=\"${GITHUB_REF#refs/tags/v}\"" ${build_file}
+                sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_tag=\"${GITHUB_REF#refs/tags/v}\"" ${{ env.build_file }}
             fi
 
            if [[ $GITHUB_REF == refs/heads/* ]]; then
-                sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_branch=\"${GITHUB_REF#refs/heads/}\"" ${build_file}
+                sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_branch=\"${GITHUB_REF#refs/heads/}\"" ${{ env.build_file }}
             fi
         fi
