@@ -17,10 +17,20 @@ runs:
 
             case "${git_branch}" in
                 "main" | "master" )
-                    if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${{ env.DISTRO_VARIANT }}" = "${DISTRO_VARIANT}" ]; then
-                        image_latest=",${GITHUB_REPOSITORY}:latest"
-                    fi
-                    branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
+                    case "${DISTRO,,}" in )
+                        "alpine" )
+                            if [ "${{ env.ALPINE_VARIANT_LATEST }}" = "${DISTRO_VARIANT}" ]; then
+                                image_latest=",${GITHUB_REPOSITORY}:${DISTRO,,}"
+                            fi
+                        ;;
+                        "debian" )
+                            if [ "${{ env.DEBIAN_VARIANT_LATEST }}" = "${DISTRO_VARIANT}" ]; then
+                                image_latest=",${GITHUB_REPOSITORY}:${DISTRO,,}"
+                            fi
+                        ;;
+                    esac
+
+                    branch_tag="${GITHUB_REPOSITORY}:${DISTRO,,}:${DISTRO_VARIANT,,}${image_latest}"
                 ;;
                 "develop" )
                     branch_tag="${GITHUB_REPOSITORY}:develop"
@@ -29,7 +39,7 @@ runs:
         fi
 
         if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            git_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-$(echo ${GITHUB_REF} | sed 's|refs/tags/||g')"
+            git_tag="${GITHUB_REPOSITORY}:$(echo ${GITHUB_REF}-${DISTRO}_${DISTRO_VARIANT} | sed 's|refs/tags/||g')"
         fi
 
         if [ -n "${branch_tag}" ] && [ -n "${git_tag}" ]; then
