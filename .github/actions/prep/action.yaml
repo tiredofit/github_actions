@@ -55,6 +55,7 @@ runs:
 
     - name: Label
       id: Label
+      shell: bash
       run: |
         image_name=${GITHUB_REPOSITORY/docker-/}
         if [ -f "${{ env.build_file }}" ] ; then
