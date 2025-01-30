@@ -1,12 +1,5 @@
 name: "Determine Branch Name and Set Variables"
 description: "Determines the branch name and sets Docker image tags based on the branch or tag."
-inputs:
-  distro_variant:
-    description: "The distribution variant to use for tagging."
-    required: true
-  latest:
-    description: "Indicates if the latest tag should be used."
-    required: true
 
 runs:
   using: "composite"
@@ -24,10 +17,10 @@ runs:
 
             case "${git_branch}" in
                 "main" | "master" )
-                    if [ "${{ inputs.latest }}" = "TRUE" ] || [ "${{ inputs.latest }}" = "${{ inputs.distro_variant }}" ]; then
+                    if [ "${{ env.LATEST }}" = "TRUE" ] || [ "${{ env.DISTRO_VARIANT }}" = "${DISTRO_VARIANT}" ]; then
                         image_latest=",${GITHUB_REPOSITORY}:latest"
                     fi
-                    branch_tag="${GITHUB_REPOSITORY}:${{ inputs.distro_variant }},${GITHUB_REPOSITORY}:${{ inputs.distro_variant }}-latest${image_latest}"
+                    branch_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT},${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-latest${image_latest}"
                 ;;
                 "develop" )
                     branch_tag="${GITHUB_REPOSITORY}:develop"
@@ -36,7 +29,7 @@ runs:
         fi
 
         if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            git_tag="${GITHUB_REPOSITORY}:${{ inputs.distro_variant }}-$(echo ${GITHUB_REF} | sed 's|refs/tags/||g')"
+            git_tag="${GITHUB_REPOSITORY}:${DISTRO_VARIANT}-$(echo ${GITHUB_REF} | sed 's|refs/tags/||g')"
         fi
 
         if [ -n "${branch_tag}" ] && [ -n "${git_tag}" ]; then
