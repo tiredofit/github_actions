@@ -83,3 +83,5 @@ runs:
                 sed -i "/FROM .*/a LABEL tiredofit.${image_name}.git_branch=\"${GITHUB_REF#refs/heads/}\"" ${{ env.build_file }}
             fi
         fi
+
+        cat Dockerfile
