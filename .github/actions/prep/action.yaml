@@ -30,7 +30,7 @@ runs:
                         ;;
                     esac
 
-                    branch_tag="${GITHUB_REPOSITORY}:${DISTRO,,}:${DISTRO_VARIANT,,}${image_latest}"
+                    branch_tag="${GITHUB_REPOSITORY}:${DISTRO,,}_${DISTRO_VARIANT,,}${image_latest}"
                 ;;
                 "develop" )
                     branch_tag="${GITHUB_REPOSITORY}:develop"
