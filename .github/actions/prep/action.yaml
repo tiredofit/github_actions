@@ -17,7 +17,7 @@ runs:
 
             case "${git_branch}" in
                 "main" | "master" )
-                    case "${DISTRO,,}" in )
+                    case "${DISTRO,,}" in
                         "alpine" )
                             if [ "${{ env.ALPINE_VARIANT_LATEST }}" = "${DISTRO_VARIANT}" ]; then
                                 image_latest=",${GITHUB_REPOSITORY}:${DISTRO,,}"
