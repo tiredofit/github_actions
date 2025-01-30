@@ -58,6 +58,7 @@ runs:
       shell: bash
       run: |
         image_name=${GITHUB_REPOSITORY/docker-/}
+        set -x
         if [ -f "${build_file}" ] ; then
             sed -i \
                     -e "/FROM .*/a LABEL tiredofit.${image_name}.git_repository=\"https://github.com/${GITHUB_REPOSITORY}\""
